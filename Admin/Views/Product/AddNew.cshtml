@@ -1,0 +1,96 @@
+﻿@model PetShop.Models.Product
+
+
+<div class="modal fade" id="ModalAddNewProduct" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info">
+                <h5 class="modal-title text-uppercase" id="modalTitle">Thêm mới sản phẩm</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-5">
+                <form id="myForm">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            @Html.Label("Tên sản phẩm")
+                            <div class="col-md-12 p-0">
+                                @Html.TextBox("Name", null, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger font-weight-bold" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.Label("Giá")
+                            <div class="col-md-12 p-0">
+                                @Html.TextBox("Price", null, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger font-weight-bold" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.Label("Khuyến mãi (%)")
+                            <div class="col-md-12 p-0">
+                                @Html.TextBoxFor(model => model.Discount, new { @class = "form-control", @type = "number", @Value = "0" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.Label("Hình Ảnh")
+                            <div class="col-md-12 p-0">
+                                @Html.TextBox("Image", null, new { @class = "form-control", @readonly = "true" })
+                                @Html.ValidationMessageFor(model => model.Image, "", new { @class = "text-danger font-weight-bold" })
+                                <button type="button" class="btn btn-outline-dark mt-2" id="selectImage">Chọn ảnh</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.Label("Mô tả")
+                            <div class="col-md-12 p-0">
+                                @Html.TextArea("Description", null, new { @class = "form-control description" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.Label("Số lượng")
+                            <div class="col-md-12 p-0">
+                                @Html.TextBox("Quantity", null, new { @class = "form-control", @type = "number" })
+                                @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger font-weight-bold" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.Label("Loại")
+                            <div class="col-md-12 p-0">
+                                @Html.DropDownList("CategoryId", null, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger font-weight-bold" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.Label("Pet")
+                            <div class="col-md-12 p-0">
+                                @Html.DropDownList("PetId", null, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.CategoryId, "", new { @class = "text-danger font-weight-bold" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.Label("Nhà cung cấp")
+                            <div class="col-md-12 p-0">
+                                @Html.DropDownList("SupplierId", null, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.SupplierId, "", new { @class = "text-danger font-weight-bold" })
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <a href="#" class="btn btn-primary btn-add-product" onclick="AddNew()">Thêm</a>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,136 @@
+﻿@using PetShop.Models
+@model List<Cart>
+
+@{
+    ViewBag.Title = "Giỏ hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="content-body">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 p-0">
+                <div class="category-title py-2">
+                    <h4 class="pl-3 d-inline">Giỏ hàng <small>(@ViewBag.Total sản phẩm)</small></h4>
+                </div>
+            </div>
+        </div>
+        <div class="row p-0">
+            <div class="col-sm-9 bg-white">
+                <div class="mt-3">
+                    @foreach (var item in Model)
+                    {
+                        <div class="row py-3">
+                            <div class="col-sm-1 pt-4 pl-4 small">
+                                @Html.ActionLink("Xóa", "RemoveFromCart", new { id = item.Id }, new { @class = "text-danger font-weight-bold on-hover" })
+                            </div>
+                            <div class="col-sm-3"><img src="@item.Image" class="img-cart" /></div>
+                            <div class="col-sm-4">
+                                <span>@item.Name</span>
+                            </div>
+                            <div class="text-danger col-sm-2 text-center">@String.Format("{0:0,0}", item.Price)₫</div>
+                            <div class="col-sm-2">
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                    <button class="px-2 decrease-quantity btn-qty" itemid="@item.Id" onclick="DecreaseCount(this)">-</button>
+                                    <input type="text" name="count" value="@item.Count" class="w-25 text-center border-0 bg-white" min="1" />
+                                    <button class="px-2 increase-quantity btn-qty" itemid="@item.Id" onclick="IncreaseCount(this)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col-sm-3 bg-white pt-4">
+                <div class="text-danger font-weight-bold bg-light p-3 rounded">
+                    <div>
+                        <span>Tổng tiền: </span>
+                        <span id="total-money">@String.Format("{0:0,0}", @ViewBag.TotalMoney)₫</span>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button class="btn btn-warning mt-3 w-100" id="btn-checkout" onclick="CheckSession()">Tiến hành đặt hàng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section masterjs{
+    <script type="text/javascript">
+        function IncreaseCount(item) {
+            var id = $(item).attr('itemid');
+            var count = $(item).prev().val();
+
+            var obj = {
+                id: id,
+                count: count
+            };
+
+            $.ajax({
+                url: '/Cart/IncreaseCount',
+                method: 'POST',
+                data: obj,
+                success: function (data) {
+                    $(item).prev().val(data.Count);
+                    $('#total-money').text(data.TotalMoney);
+                },
+                error: function () {
+                    alert('there is some problem.')
+                }
+            });
+        }
+
+
+        function DecreaseCount(item) {
+            var id = $(item).attr('itemid');
+            var count = $(item).next().val();
+
+            if (count <= 1) {
+                alert('Số lượng phải lớn hơn 0.');
+            } else {
+                var obj = {
+                    id: id,
+                    count: count
+                }
+
+                $.ajax({
+                    url: '/Cart/DecreaseCount',
+                    method: 'POST',
+                    data: obj,
+                    success: function (data) {
+                        $(item).next().val(data.Count);
+                        $('#total-money').text(data.TotalMoney);
+                    },
+                    error: function () {
+                        alert('Có lỗi xảy ra.');
+                    }
+                });
+            }
+        }
+
+        function CheckSession() {
+            $.ajax({
+                url: '/Cart/CheckSession',
+                method: 'POST',
+                data: "{}",
+                success: function (data) {
+                    if (data == 0) {
+                        $('#modal-login').modal('show');
+                    } else {
+                        if (data == 1) {
+                            var url = "/Cart/CheckOut";
+                            window.location.replace(url);
+                        } else {
+                            $('#modal-login').modal('show');
+                        }
+                    }
+                },
+                error: function () {
+                    alert('Có lỗi xảy ra.');
+                }
+            });
+        }
+    </script>
+}

@@ -1,0 +1,210 @@
+﻿@using PetShop.Models
+@using PagedList.Mvc;
+@model PagedList.PagedList<Order>
+
+@{
+    ViewBag.Title = "ListAllOrders";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<br>
+<h3>Đơn hàng</h3>
+<div class="row my-2">
+    <div class="col-sm-6">
+        <div class="sort d-inline-block">
+            <select name="sort" id="sort" class="form-control d-inline">
+                <option selected>Sắp xếp...</option>
+                <option value="username">Sắp xếp theo tên tài khoản</option>
+                <option value="created-date">Sắp xếp theo ngày đặt</option>
+                <option value="created-date">Sắp xếp theo tổng tiền</option>
+            </select>
+        </div>
+
+    </div>
+    <div class="col-sm-6">
+        @using (Html.BeginForm("ListAllOrders", "Order", FormMethod.Get, new { @class = "form-inline my-2 my-lg-0 float-right" }))
+        {
+            <input class="form-control mr-sm-2 search-input" type="search" placeholder="Tìm kiếm..." aria-label="Search" name="searchStr">
+            <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search"></i></button>
+        }
+    </div>
+</div>
+<table class="table table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">Tên khách hàng</th>
+            <th scope="col">Tài khoản</th>
+            <th scope="col">Ngày đặt</th>
+            <th scope="col">Tổng tiền</th>
+            <th scope="col">Trạng thái</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr id="row_@item.Id">
+                <th scope="row">@item.Id</th>
+                <td>@item.Customer.FullName</td>
+                <td>@item.Customer.Username</td>
+                <td>@item.CreatedDate</td>
+                <td>@item.TotalMoney</td>
+                <td>@item.Status.Name</td>
+                <td>
+                    <a href="#" class="mx-1 btn-show-order" onclick="OrderStatus(this)" itemid="@item.Id">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <div class="modal fade" id="myModal_@item.Id" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header bg-info">
+                                    <h5 class="modal-title text-uppercase " id="modalTitle">Thông tin đơn hàng</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row justify-content-center">
+                                        <div class="col-sm-9 bg-light rounded p-2">
+                                            <h6>@item.Customer.FullName</h6>
+                                            <h6>@item.Customer.Phone</h6>
+                                            <h6>@item.Customer.Address</h6>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-sm-12">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr class="bg-white">
+                                                        <th scope="col"></th>
+                                                        <th scope="col">Tên sản phẩm</th>
+                                                        <th scope="col">Giá</th>
+                                                        <th scope="col">Số lượng</th>
+                                                        <th scope="col">Thành tiền</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @Html.Action("ListOrderDetailsByOrderId", "Order", new { id = item.Id })
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.Label("Trạng thái")
+                                        <div class="col-md-12 p-0">
+                                            @Html.DropDownList("StatusId", null, new { @class = "form-control", @id = "Status_" + item.Id })
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-sm-2 pr-0">
+                                            <span>Tổng tiền: </span>
+
+                                        </div>
+                                        <div class="col-sm-10 p-0">
+                                            <h5 class="text-danger">
+                                                @item.TotalMoney
+                                            </h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#" class="btn btn-primary btn-save-customer" onclick="UpdateStatus(this)" itemid="@item.Id">Lưu</a>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @Ajax.ActionLink(" ", "Delete", "Order", new { id = item.Id }, new AjaxOptions
+                              {
+                                  Confirm = "Bạn có chắc chắn muốn xóa đơn hàng này?",
+                                  OnComplete = "$('#row_" + item.Id + "').remove()",
+                                  HttpMethod = "Delete"
+                              }, new { @class = "fas fa-trash mx-1" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<form method="post" action="@Url.Action("ExportReport", "Order", new { area = "Admin" })">
+    <button type="submit" class="btn btn-primary">Thống kê doanh thu</button>
+</form>
+<br />
+<form method="post" action="@Url.Action("ExportProductQuantityReport", "Order", new { area = "Admin" })">
+    <button type="submit" class="btn btn-primary">Thống kê số lượng</button>
+</form>
+<div class="row text-center">
+    <div class="col-sm-12">
+        @Html.PagedListPager(Model, page => Url.Action("ListAllOrders", new { page = page }))
+    </div>
+</div>
+
+
+@section masterjs{
+
+    <script>
+
+        function OrderStatus(item) {
+
+            var orderId = $(item).attr('itemid');
+
+            var obj = {
+                id: orderId
+            };
+
+            console.log(obj);
+
+            $.ajax({
+                url: '/Admin/Order/OrderStatus',
+                method: 'POST',
+                data: obj,
+                success: function (data) {
+                    $('#Status_' + orderId).val(data).change();
+                    $('#myModal_' + orderId).modal();
+                },
+                error: function () {
+                    alert('Có lỗi xảy ra.');
+                }
+
+            });
+        }
+
+
+        function UpdateStatus(item) {
+
+            var orderId = $(item).attr('itemid');
+            var statusId = $('#Status_' + orderId).val();
+
+            var obj = {
+                id: orderId,
+                statusId: statusId
+            };
+
+            console.log(obj);
+
+            $.ajax({
+                url: '/Admin/Order/UpdateStatus',
+                method: 'POST',
+                data: obj,
+                success: function (data) {
+                    if (data == "Success") {
+                        alert('Cập nhật thành công!');
+                        window.location.reload();
+                    }
+                },
+                error: function () {
+                    alert('Có lỗi xảy ra.');
+                }
+
+            });
+        }
+
+
+        $(document).ready(function () {
+            $('.btn-show-order').click(function (event) {
+                event.preventDefault();
+            });
+        });
+    </script>
+
+
+}

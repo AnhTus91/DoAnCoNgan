@@ -1,0 +1,42 @@
+﻿@model PetShop.Models.Category
+
+<div class="modal fade" id="ModalAddNewCategory" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info">
+                <h5 class="modal-title text-uppercase" id="modalTitle">Thêm loại sản phẩm</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @using (Html.BeginForm("AddNew", "Category", FormMethod.Post))
+            {
+                <div class="form-horizontal">
+                    <div class="modal-body">
+                        <div class="form-group row mx-4">
+                            <label>Tên loại</label>
+                            @Html.TextBox("Name", null, new { @class = "form-control" })
+                        </div>
+                        <div class="form-group row mx-4">
+                            @Html.Label("Danh mục")
+                            <div class="col-md-12 p-0">
+                                @Html.DropDownList("ParentId", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group row mx-4">
+                            @Html.Label("Danh mục")
+                            <div class="col-md-12 p-0">
+                                @Html.DropDownList("PetId", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-info">Thêm</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

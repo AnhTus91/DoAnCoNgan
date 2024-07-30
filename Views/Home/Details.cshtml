@@ -1,0 +1,167 @@
+﻿@model PetShop.Models.Product
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var productsOfTheSameType = (List<PetShop.Models.Product>)ViewBag.ProductsOfTheSameType;
+}
+<div class="row p-0">
+    <div class="col-sm-12 bg-white">
+        <div class="row mb-3">
+            <div class="col-sm-12 p-0">
+                <div class="category-title py-2 ">
+                    <h4 class="text-uppercase pl-3">chi tiết sản phẩm</h4>
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-sm-4 p-0">
+                <img src="@Model.Image" alt="" class="img-details">
+            </div>
+
+            <div class="col-sm-8">
+                <h3 class="name font-weight-bold">
+                    @Model.Name
+                </h3>
+                <p class="desciption">
+                    @if (@Model.Description == null)
+                    {
+                        @Html.Raw(" ")
+                    }
+                    else
+                    {
+                        @Html.Raw(@Model.Description.ToString())
+                    }
+                </p>
+
+                @if (Model.PromotePrice != null)
+                {
+                    <div class="price text-danger font-weight-bold">
+                        @String.Format("{0:0,0}", Model.PromotePrice) ₫
+                    </div>
+                }
+                else
+                {
+                    <div class="price text-danger font-weight-bold">
+                        @String.Format("{0:0,0}", Model.Price) ₫
+                    </div>
+                }
+
+
+                <div class="brand text-secondary my-3">
+                    Thương hiệu: @Model.Supplier.Name
+                </div>
+
+                <div class="qtySelector my-3">
+                    <span>Số lượng: &nbsp;</span>
+                    <button class="px-2 py-1 decrease-quantity btn btn-light">-</button>
+                    <input type="text" value="1" class="quantity border-0">
+                    <button class="px-2 py-1 increase-quantity btn btn-light">+</button>
+                </div>
+
+                <div>
+                    <button class="btn btn-info mt-3" itemid="@Model.Id" onclick="AddToCartInProductDetails(this)">Thêm vào giỏ <i class="fas fa-cart-plus"></i></button>
+                </div>
+            </div>
+        </div>
+        <!-- end row -->
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="row mb-3">
+                    <div class="col-sm-12 p-0">
+                        <div class="category-title py-2 mt-5">
+                            <h4 class="text-uppercase pl-3">SẢN PHẨM LIÊN QUAN</h4>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row products flex-wrap">
+                    @foreach (var item in productsOfTheSameType)
+                    {
+                        <div href="#" class="card col-sm-2 product">
+                            <a href="#" class="text-decoration-none">
+                                <img class="card-img-top" src="@item.Image" alt="Card image cap">
+                                <div class="card-body">
+                                    <h5 class="card-title">@item.Name</h5>
+                                </div>
+                            </a>
+                            <div class="mt-2 pt-3">
+                                <div class="ml-3 mb-3 text-danger font-weight-bold price">@String.Format("{0:0,0}", item.Price) ₫</div>
+                                <a href="@Url.Action("AddToCart", "Cart", new { id = item.Id, url = Request.Url.ToString() })" class="cart-plus text-warning">
+                                    <i class="fas fa-cart-plus"></i>
+                                </a>
+                            </div>
+                            <a href="@Url.Action("Details", "Home", new { id = item.Id })" class="btn btn-dark btn-more-details">Xem chi tiết <i class="fas fa-info-circle"></i></a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-sm-12 text-center">
+        <a href="#" class="btn btn-outline-info mt-3 px-4">Xem tất cả</a>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.increase-quantity').click(function () {
+
+            var qty = $('.quantity').val();
+            qty++;
+            $('.quantity').val(qty);
+
+        });
+
+        $('.decrease-quantity').click(function () {
+
+            var qty = $('.quantity').val();
+            if (qty > 1) {
+                qty--;
+                $('.quantity').val(qty);
+            }
+        });
+    });
+</script>
+
+@section masterjs{
+    <script type="text/javascript">
+        function AddToCartInProductDetails(item) {
+
+            var id = $(item).attr('itemid');
+            var count = $('.quantity').val();
+
+            var obj = {
+                id: $(item).attr('itemid'),
+                count: $('.quantity').val().trim()
+            };
+
+            $.ajax({
+                url: "/Cart/AddToCartInDetails",
+                method: "POST",
+                data: obj,
+                success: function (data) {
+                    $('#cart-counter').text(data);
+
+                    $('.cart-noti').removeClass('d-none');
+                    $('.cart-noti').fadeIn();
+
+                    setTimeout(function () {
+                        $('.cart-noti').fadeOut();
+                    }, 900);
+                },
+                error: function () {
+                    alert('There are some problems to add Item.');
+                }
+            });
+        }
+    </script>
+}

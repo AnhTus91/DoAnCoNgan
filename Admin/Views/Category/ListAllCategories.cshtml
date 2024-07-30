@@ -1,0 +1,179 @@
+﻿@using PetShop.Models
+@using PagedList.Mvc;
+@model PagedList.PagedList<Category>
+
+
+@{
+    ViewBag.Title = "ListAllCategories";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<br>
+<h3>Loại sản phẩm</h3>
+<!-- sorting and searching -->
+<div class="row my-2">
+    <div class="col-sm-6">
+        <div class="sort d-inline-block">
+            <select name="sort" id="sort" class="form-control d-inline">
+                <option selected>Sắp xếp...</option>
+                <option value="username">Sắp xếp theo tên loại</option>
+            </select>
+        </div>
+
+    </div>
+    <div class="col-sm-6">
+        @using (Html.BeginForm("ListAllCategories", "Category", FormMethod.Get, new { @class = "form-inline my-2 my-lg-0 float-right" }))
+        {
+            <input class="form-control mr-sm-2 search-input" type="search" placeholder="Tìm kiếm..." aria-label="Search" name="searchStr">
+            <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search"></i></button>
+        }
+
+    </div>
+</div>
+<table class="table table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">Tên loại</th>
+            <th scope="col">Danh mục</th>
+            @*<th scope="col">Thương hiệu</th>*@
+            <th scope="col" class="text-center">
+                <a href="#" class="btn btn-info" data-toggle="modal" data-target="#ModalAddNewCategory">Thêm mới <i class="fas fa-plus-circle"></i></a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr id="row_@item.Id">
+                <th scope="row">@item.Id</th>
+                <td>@item.Name</td>
+                @*<td>@item.ParentCategory.Name</td>*@
+                <td>@item.Pet.Name</td>
+                <td class="text-center">
+                    <a href="#" class="mx-1 btn-update-category" onclick="CategoryInfo(this)" itemid="@item.Id">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <div class="modal fade" id="myModal_@item.Id" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header bg-info">
+                                    <h5 class="modal-title text-uppercase" id="modalTitle">Thông tin loại sản phẩm</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group row mx-2">
+                                        <label>Tên loại</label>
+                                        <input type="text" class="form-control col-sm-12" id="category-name_@item.Id" aria-describedby="emailHelp" name="Username">
+                                    </div>
+                                    <div class="form-group row mx-2" ">
+                                        @Html.Label("Danh mục")
+                                        <div class="col-md-12 p-0">
+                                            @Html.DropDownList("ParentId", null, new { @class = "form-control", @id = "ParentCategory_" + item.Id })
+                                        </div>
+                                    </div>
+                                    <div class="form-group row mx-2" ">
+                                        @Html.Label("")
+                                        <div class="col-md-12 p-0">
+                                            @Html.DropDownList("PetId", null, new { @class = "form-control", @id = "Pet_" + item.Id })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <a href="#" class="btn btn-primary btn-save-customer" onclick="UpdateCategory(this)" itemid="@item.Id">Lưu</a>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @Ajax.ActionLink(" ", "Delete", "Category", new { id = item.Id }, new AjaxOptions
+                              {
+                                  Confirm = "Bạn có chắc chắn xóa loại sản phẩm này?",
+                                  OnComplete = "$('#row_" + item.Id + "').remove()",
+                                  HttpMethod = "Delete"
+                              }, new { @class = "fas fa-trash mx-1" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="row text-center">
+    <div class="col-sm-12">
+        @Html.PagedListPager(Model, page => Url.Action("ListAllCategories", new { page = page }))
+    </div>
+</div>
+@Html.Action("AddNew", "Category")
+
+
+
+
+@section masterjs{
+
+    <script>
+        function CategoryInfo(item) {
+            var categoryId = $(item).attr('itemid');
+
+            var obj = {
+                id: categoryId
+            }
+
+            $.ajax({
+                url: '/Admin/Category/CategoryInfo',
+                method: 'POST',
+                data: obj,
+                success: function (data) {
+                    if (data != "CannotFindCategory") {
+                        $('#category-name_' + categoryId).val(data.CategoryName);
+                        $('#ParentCategory_' + categoryId).val(data.ParentId).change();
+                        $('#Pet_' + categoryId).val(data.PetId).change();
+                        $('#myModal_' + categoryId).modal();
+                    }
+                    else {
+                        alert('Có lỗ xảy ra! Không tìm thấy loại sản phẩm.');
+                    }
+                },
+                error: function () {
+                    alert('Có lỗ xảy ra!')
+                }
+            });
+        }
+
+        function UpdateCategory(item) {
+            var categoryId = $(item).attr('itemid');
+            var categoryName = $('#category-name_' + categoryId).val();
+            var parentCategory = $('#ParentCategory_' + categoryId).val();
+            var petId = $('#Pet_' + categoryId).val();
+
+            var obj = {
+                id: categoryId,
+                name: categoryName,
+                parentId: parentCategory,
+                petId: petId
+            }
+
+            $.ajax({
+                url: '/Admin/Category/UpdateCategory',
+                method: 'POST',
+                data: obj,
+                success: function (data) {
+                    if (data == "Success") {
+                        alert('Cập nhật thành công!');
+                        window.location.reload();
+                    }
+                },
+                error: function () {
+                    alert('Có lỗ xảy ra!')
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $('.btn-update-category').click(function (event) {
+                event.preventDefault();
+            });
+        });
+    </script>
+
+}

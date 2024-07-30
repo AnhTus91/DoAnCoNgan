@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Shop Bánh</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="~/Assets/Admin/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/Assets/Admin/fontawesome/css/all.min.css">
+    <!-- Main css -->
+    <link rel="stylesheet" href="~/Assets/Admin/css/style.css">
+    <link href="~/Content/PagedList.css" rel="stylesheet" />
+
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+
+</head>
+<body>
+
+    <div class="header">
+        <div class="container">
+            <div class="row bg-light rounded mt-3 text-center">
+                <div class="col-sm-12">
+                    <h2>
+                        Quản lý cửa hàng bánh
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content bg-light mx-5 mt-3 rounded">
+        <div class="container-fluid p-5">
+            <div class="row">
+                <div class="col-sm-12">
+                    <!-- Nav tabs -->
+                    <ul class="nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("ListAllCustomers", "Customer")">Khách hàng</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("ListAllProducts", "Product")">Sản phẩm</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("ListAllOrders", "Order")">Đơn hàng</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("ListAllCategories", "Category")">Loại sản phẩm</a>
+                        </li>
+
+                    </ul>
+
+
+                    <!-- end sorting -->
+                    <!-- table -->
+                    @RenderBody()
+                    <!-- table -->
+                    <div id="order" class="container tab-pane fade">
+                        <br>
+                        <h3>Menu 1</h3>
+                        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    </div>
+                    <div id="menu2" class="container tab-pane fade">
+                        <br>
+                        <h3>Menu 2</h3>
+                        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- JQuery -->
+
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <!-- Main js -->
+    <script src="~/Assets/Admin/js/script.js"></script>
+    <!-- bs js -->
+    <script src="~/Assets/Admin/bootstrap/js/bootstrap.min.js"></script>
+    <!-- validation -->
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <!-- ck editor and ck finder -->
+    <script src="~/Content/ckeditor/ckeditor.js"></script>
+    <script src="~/Content/ckfinder/ckfinder.js"></script>
+    <script src="~/Scripts/main.js"></script>
+    @RenderSection("masterjs", required: false)
+
+
+</body>
+</html>

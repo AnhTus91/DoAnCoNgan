@@ -1,0 +1,78 @@
+﻿@model PetShop.Areas.Admin.AdminModels.LoginViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="~/Assets/Admin/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/Assets/Admin/fontawesome/css/all.min.css">
+    <!-- Main css -->
+    <link rel="stylesheet" href="~/Assets/Admin/css/style.css">
+    <link href="~/Content/PagedList.css" rel="stylesheet" />
+
+    <!-- google fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Open+Sans&family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+
+
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Patrick Hand', cursive;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="row justify-content-center mt-5">
+            <div class="col-sm-4 rounded-bottom border-bottom border-white pb-3">
+                <h1 class="text-center border pb-2 border-white">Quản lý Shop bán bánh</h1>
+                @using (Html.BeginForm("Index", "Login", FormMethod.Post))
+                {
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="text-danger mt-5 row px-2">
+                        <div class="col-sm-12 text-center">
+                            @ViewData["IncorrectAdmin"]
+                        </div>
+                       
+                    </div>
+                    <div class="form-group row px-2 ">
+                        <label for="exampleInputEmail1">Tài khoản</label>
+                        @Html.TextBoxFor(model => model.Username, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group row px-2">
+                        <label for="exampleInputPassword1">Mật khẩu</label>
+                        @Html.TextBoxFor(model => model.Password, new { @class = "form-control", @type = "Password" })
+                        @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="row px-2">
+                        <button class="btn btn-success col-sm-12" id="btn-login" onclick="Login()">Đăng nhập</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <!-- Main js -->
+    <script src="~/Assets/Admin/js/script.js"></script>
+    <!-- bs js -->
+    <script src="~/Assets/Admin/bootstrap/js/bootstrap.min.js"></script>
+    <!-- validation -->
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+﻿@using PetShop.Models
+@using PagedList.Mvc;
+@model PagedList.PagedList<Product>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section masterjs{
+
+    <script type="text/javascript">
+        function AddToCart(item) {
+            var id = $(item).attr('itemid');
+
+            var obj = {
+                id: id
+            };
+
+            $.ajax({
+                url: "/Cart/AddToCart",
+                method: "POST",
+                data: obj,
+                success: function (data) {
+                    $('#cart-counter').text(data);
+
+                    $('.cart-noti').removeClass('d-none');
+                    $('.cart-noti').fadeIn();
+
+                    setTimeout(function () {
+                        $('.cart-noti').fadeOut();
+                    }, 900);
+                },
+                error: function () {
+                    alert('There are some problems to add Item.');
+                }
+            });
+        }
+    </script>
+}
+
+<div class="row">
+    <div class="col-sm-12 p-0">
+        <div class="category-title pt-1 text-center">
+            <h5 class="text-uppercase pl-3">Bánh Kem</i></h5>
+        </div>
+    </div>
+</div>
+
+
+<div class="row mt-3">
+    <!-- start menu side -->
+    <div class="col-sm-2">
+        <div class="row menu-dog scroll-none rounded pb-3">
+            <div class="col-sm-12 rounded p-0">
+                @Html.Action("MenuFoodForDog", "Shopping")
+                @Html.Action("MenuAccessoryForDog", "Shopping")
+              
+            </div>
+        </div>
+    </div>
+    <!-- end menu side -->
+    <div class="col-sm-10 products">
+        <div class="row flex-wrap">
+            @foreach (var item in Model)
+            {
+                <div href="#" class="card col-sm-2 p-0 product border rounded-0">
+                    <a href="@Url.Action("Details", "Home", new { id = item.Id })" class="text-decoration-none">
+                        <img class="card-img-top" src="@Url.Content(@item.Image)" alt="Card image cap">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Name</h5>
+                        </div>
+                    </a>
+                    <div class="mt-2 pt-1">
+                        <div class="ml-3 mb-3 text-danger font-weight-bold price">@String.Format("{0:0,0}", item.Price) ₫</div>
+                        <button class="cart-plus text-warning bg-white border-0" itemid="@item.Id" onclick="AddToCart(this)"><i class="fas fa-cart-plus"></i></button>
+                    </div>
+
+                    <a href="@Url.Action("Details", "Home", new { id = item.Id })" class="btn btn-dark btn-more-details">Xem chi tiết <i class="fas fa-info-circle"></i></a>
+                </div>
+            }
+        </div>
+        <div class="row text-center">
+            <div class="col-sm-12">
+                @Html.PagedListPager(Model, page => Url.Action("ShoppingForDog", new { page = page }))
+            </div>
+        </div>
+    </div>
+    <!-- end products -->
+</div>
+
+

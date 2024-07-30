@@ -1,0 +1,14 @@
+﻿@model List<PetShop.Models.OrderDetail>
+
+@foreach (var item in Model)
+{
+    <tr class="bg-white">
+        <th scope="row">@item.Id</th>
+        <td>@item.Product.Name</td>
+        <td>@item.Product.Price</td>
+        <td>@item.Count</td>
+        <td>@item.TotalPrice</td>
+    </tr>
+}
+
+

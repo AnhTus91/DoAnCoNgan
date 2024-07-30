@@ -1,0 +1,139 @@
+﻿@using PetShop.Models
+@model List<Cart>
+
+@{
+    ViewBag.Title = "CheckOut";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var customer = (Customer)ViewBag.CustomerInfo;
+}
+<div class="row">
+    <div class="col-sm-12 p-0">
+        <div class="category-title py-2">
+            <h4 class="text-uppercase pl-3">Thanh toán</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+
+    <div class="col-sm-9 bg-white p-4">
+        <div class="row">
+            <div class="col-sm-12">
+                <h4>Địa chỉ giao hàng</h4>
+                <table class="table">
+                    <tr>
+                        <td>@customer.FullName</td>
+                        <td>
+                            @customer.Address
+                            <a href="#" class="ml-4 btn-update-address" data-toggle="modal" data-target="#myModal_@customer.Id">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <div class="modal fade" id="myModal_@customer.Id" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-info">
+                                            <h5 class="modal-title text-uppercase" id="modalTitle">Thay đỗi địa chỉ</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+
+                                            <div class="form-group row mx-2">
+                                                <label class="col-sm-3">Địa chỉ</label>
+                                                <textarea type="text" class="form-control col-sm-9" id="address_@customer.Id">@customer.Address</textarea>
+                                            </div>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a href="#" class="btn btn-primary btn-save-customer" onclick="UpdateAddress(this)" itemid="@customer.Id">Lưu</a>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>@customer.Phone</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-sm-12">
+                <h4>Đơn hàng</h4>
+                <table class="table">
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><img src="@item.Image" alt="Alternate Text" style="width:100px;" /></td>
+                            <td>@item.Name</td>
+                            <td>@item.Count</td>
+                        </tr>
+                    }
+
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-3 bg-white pt-5">
+        <div class="text-danger font-weight-bold bg-light p-3">
+            <div>
+                <span>Tổng tiền:</span>
+                @String.Format("{0:0,0}", @ViewBag.TotalMoney) ₫
+            </div>
+        </div>
+        <div class="text-center">
+            @Html.ActionLink("Đặt hàng", "InsertOrder", null, new { @class = "btn btn-warning mt-3 w-100" })
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+@section masterjs{
+
+    <script>
+
+        function UpdateAddress(item) {
+            var customerId = $(item).attr('itemid');
+            var address = $('#address_' + customerId).val();
+
+            var obj = {
+                id: customerId,
+                address: address
+            };
+
+            console.log(obj);
+
+            $.ajax({
+                url: '/Cart/UpdateAddress',
+                method: 'POST',
+                data: obj,
+                success: function (data) {
+                    if (data == "Success") {
+                        alert('Cập nhật thành công!');
+                        window.location.reload();
+                    }
+                },
+                error: function () {
+                    alert('Có lỗi xảy ra.')
+                }
+            });
+        }
+
+
+        $(document).ready(function () {
+            $('.btn-update-address').click(function (event) {
+                event.preventDefault();
+            });
+        });
+
+    </script>
+
+
+}

@@ -1,0 +1,14 @@
+﻿@model List<PetShop.Models.Category>
+
+    <ul class="list-group list-group-flush">
+        <li href="#" class="list-group-item p-0 text-white text-uppercase font-weight-bold rounded bg-success pl-2">
+            <img src="images/dog_collar_64px.png" alt="" class="img-menu-type"> Bánh kem
+        </li>
+        @foreach (var item in Model)
+        {
+            <li class="list-group-item bg-transparent p-0 text-center">
+                <a href="@Url.Action("ListByMenuSide", "Home", new { id = item.Id })" class="list-group-item text-dark border-0 bg-transparent">@item.Name</a>
+            </li>
+        }
+
+    </ul>

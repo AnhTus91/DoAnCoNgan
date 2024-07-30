@@ -1,0 +1,307 @@
+﻿@using PetShop.Models
+@using PagedList.Mvc;
+@model PagedList.PagedList<Product>
+@{
+    ViewBag.Title = "ListAllProducts";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}<br>
+<h3>Sản phẩm</h3>
+<!-- sorting and searching -->
+<div class="row my-2">
+    <div class="col-sm-6">
+        <div class="sort d-inline-block">
+            <select name="sort" id="sort" class="form-control d-inline">
+                <option selected>Sắp xếp...</option>
+                <option value="username">Sắp xếp tên sản phẩm</option>
+                <option value="modify-date">Sắp xếp ngày nhập</option>
+                <option value="price">Sắp xếp theo giá</option>
+                <option value="stock">Sắp xếp theo số lượng tồn kho</option>
+            </select>
+        </div>
+
+    </div>
+    <div class="col-sm-6">
+        @using (Html.BeginForm("ListAllProducts", "Product", FormMethod.Get, new { @class = "form-inline my-2 my-lg-0 float-right" }))
+        {
+            <input class="form-control mr-sm-2 search-input" type="search" placeholder="Tìm kiếm..." aria-label="Search" name="searchStr">
+            <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search"></i></button>
+        }
+    </div>
+</div>
+<table class="table table-striped">
+    <thead>
+        <tr class="thead-dark">
+            <th scope="col"></th>
+            <th scope="col">Hình Ảnh</th>
+            <th scope="col">Tên sản phẩm</th>
+            <th scope="col">Giá</th>
+            @*<th scope="col">Loại</th>*@
+            <th scope="col">Số lượng kho</th>
+            <th scope="col" class="text-center">
+                <a href="#" class="btn btn-info" data-toggle="modal" data-target="#ModalAddNewProduct">Thêm mới <i class="fas fa-plus-circle"></i></a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr id="row_@item.Id">
+                <th scope="row">@item.Id</th>
+                <td>
+                    <img src="@Url.Content(@item.Image)" alt="Alternate Text" width="120" />
+                </td>
+                <td>@item.Name</td>
+                <td>@item.Price</td>
+                @*<td>@item.Category.Name</td>*@
+                <td>@item.Quantity</td>
+                <td class="text-center">
+                    <a href="#" class="mx-1 btn-show" onclick="ProductInfo(this)" itemid="@item.Id">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <div class="modal fade" id="myModal_@item.Id" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header bg-info">
+                                    <h5 class="modal-title text-uppercase" id="modalTitle">Thông tin sản phẩm</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body text-left">
+                                    <div class="form-group">
+                                        @Html.Label("Tên sản phẩm")
+                                        <div class="col-md-12 p-0">
+                                            <input type="text" name="name" id="name_@item.Id" class="form-control" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.Label("Giá")
+                                        <div class="col-md-12 p-0">
+                                            <input type="text" name="price" id="price_@item.Id" class="form-control" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.Label("Giảm giá (%)")
+                                        <div class="col-md-12 p-0">
+                                            <input type="text" name="discount" id="discount_@item.Id" class="form-control" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.Label("Hình Ảnh")
+                                        <div class="col-md-12 p-0">
+                                            <input type="text" name="image" id="image_@item.Id" class="form-control image-path" readonly />
+                                            <button type="button" class="btn btn-outline-dark mt-2 btn-selectImage" id="selectImage_@item.Id">Chọn ảnh</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.Label("Mô tả")
+                                        <div class="col-md-12 p-0">
+                                            <textarea class="form-control description" id="description_@item.Id">
+                                                @if (item.Description == null)
+                                                {
+                                                     @Html.Raw(" ")
+                                                }
+                                                else
+                                                {
+                                                    @Html.Raw(item.Description.ToString())
+                                                }
+                                            </textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.Label("Số lượng")
+                                        <div class="col-md-12 p-0">
+                                            <input type="number" name="price" id="quantity_@item.Id" class="form-control" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.Label("Loại")
+                                        <div class="col-md-12 p-0">
+                                            @Html.DropDownList("CategoryId", null, new { @class = "form-control", @id = "category_" + item.Id })
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.Label("Nhà cung cấp")
+                                        <div class="col-md-12 p-0">
+                                            @Html.DropDownList("SupplierId", null, new { @class = "form-control", @id = "supplier_" + item.Id })
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#" class="btn btn-primary btn-save-product" onclick="UpdateProduct(this)" itemid="@item.Id">Lưu</a>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @Ajax.ActionLink(" ", "Delete", "Product", new { id = item.Id }, new AjaxOptions
+                              {
+                                  Confirm = "Bạn có chắc chắn muốn sản phẩm này?",
+                                  OnComplete = "$('#row_" + item.Id + "').remove()",
+                                  HttpMethod = "Delete"
+                              }, new { @class = "fas fa-trash mx-1" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="row text-center">
+    <div class="col-sm-12">
+        @Html.PagedListPager(Model, page => Url.Action("ListAllProducts", new { page = page }))
+    </div>
+</div>
+@Html.Action("AddNew", "Product")
+
+
+@section masterjs{
+    <script>
+        function AddNew() {
+
+            if (!$('#myForm').valid()) {
+                return false;
+            }
+            else {
+                var name = $('#Name').val();
+                var price = $('#Price').val();
+                var discount = $('#Discount').val();
+                var image = $('#Image').val();
+                var description = CKEDITOR.instances["Description"].getData();
+                var quantity = $('#Quantity').val();
+                var categoryId = $('#CategoryId').val();
+                var petId = $('#PetId').val();
+                var supplierId = $('#SupplierId').val();
+
+                var obj = {
+                    name: name,
+                    price: price,
+                    discount: discount,
+                    image: image,
+                    description: description,
+                    quantity: quantity,
+                    categoryId: categoryId,
+                    petId: petId,
+                    supplierId: supplierId
+                }
+            }
+
+            $.ajax({
+                url: '/Admin/Product/AddNew',
+                method: 'POST',
+                data: obj,
+                success: function (data) {
+                    if (data == "Success") {
+                        alert('Thêm sản phẩm thành công!');
+                        window.location.reload();
+                    }
+                },
+                error: function () {
+                    alert('Có lỗi xảy ra.');
+                }
+            });
+
+        }
+
+        function ProductInfo(item) {
+
+            var productId = $(item).attr('itemid');
+
+            var obj = {
+                id: productId
+            };
+
+            $.ajax({
+                url: '/Admin/Product/ProductInfo',
+                method: 'POST',
+                data: obj,
+                success: function (data) {
+                    if (data != "CannotFindProduct") {
+                        $('#name_' + productId).val(data.Name);
+                        $('#price_' + productId).val(data.Price);
+                        $('#discount_' + productId).val(data.Discount);
+                        $('#image_' + productId).val(data.Image);
+                        $('#quantity_' + productId).val(data.Quantity);
+                        $('#category_' + productId).val(data.CategoryId).change();
+                        $('#supplier_' + productId).val(data.SupplierId).change();
+                        $('#myModal_' + productId).modal();
+                    }
+                },
+                error: function () {
+                    alert('Có lỗi xảy ra.')
+                }
+            });
+        };
+
+        function UpdateProduct(item) {
+            var productId = $(item).attr('itemid');
+            var name = $('#name_' + productId).val();
+            var price = $('#price_' + productId).val();
+            var image = $('#image_' + productId).val();
+            var description = $('#description_' + productId).val();
+            var quantity = $('#quantity_' + productId).val();
+            var categoryId = $('#category_' + productId).val();
+            var supplierId = $('#supplier_' + productId).val();
+
+            var obj = {
+                id: productId,
+                name: name,
+                price: price,
+                image: image,
+                description: description,
+                quantity: quantity,
+                categoryId: categoryId,
+                supplierId: supplierId
+            };
+
+
+            $.ajax({
+                url: '/Admin/Product/UpdateProduct',
+                method: 'POST',
+                data: obj,
+                success: function (data) {
+                    if (data == "Success") {
+                        alert('Cập nhật thành công!');
+                        $('#myModal_' + productId).modal();
+                        window.location.reload();
+                    }
+                },
+                error: function () {
+                    alert('Có lỗi xảy ra.');
+                }
+            });
+        };
+
+        $(document).ready(function () {
+            $('.btn-show').click(function (event) {
+                event.preventDefault();
+
+            });
+
+            $('.btn-save-product').click(function (event) {
+                event.preventDefault();
+            });
+
+            $('.btn-add-product').click(function (event) {
+                event.preventDefault();
+            });
+
+            $('.btn-selectImage').click(function (event) {
+                var finder = new CKFinder();
+                finder.selectActionFunction = function (fileUrl) {
+                    $('.image-path').val(fileUrl);
+                };
+                finder.popup();
+            });
+
+        });
+
+
+    </script>
+}

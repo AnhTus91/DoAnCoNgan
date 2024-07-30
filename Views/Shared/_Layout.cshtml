@@ -1,0 +1,544 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Bakery House - Cửa Hàng Bánh Ngọt</title>
+
+    <link rel="stylesheet" href="~/Assets/Client/petshop/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/Assets/Client/petshop/css/style.css">
+    <link rel="stylesheet" href="~/Assets/Client/petshop/fontawesome/css/all.css">
+    <link href="~/Content/PagedList.css" rel="stylesheet" />
+    <!-- google fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Open+Sans&family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+
+    <link
+          rel="chrome-webstore-item"
+          type="jpg"
+          href="~/Assets/Client/petshop/images/logo-bakery1.jpg"
+          />
+    <!-- jquery -->
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="row top-info">
+
+                <div class="col-sm-3 logo my-3">
+                    <a href="/Home">
+                        <img src="~/Assets/Client/petshop/images/logo-bakery1.jpg" alt="" class="rounded-circle p-2">
+                        <span class="ml-3 font-weight-bold">
+                            Bakery House
+                        </span>
+                    </a>
+                </div>
+                <!-- end logo -->
+
+                <div class="col-sm-7 search mt-5 pl-4">
+                    @using (Html.BeginForm("Search", "Home", FormMethod.Post, new { @class = "form-inline" }))
+                    {
+                        <input class="form-control mr-sm-2" type="search" placeholder="Tìm kiếm..." name="searchStr">
+                        <button class="btn btn-danger btn-search my-2 my-sm-0" type="submit">Tìm</button>}
+                </div>
+                <!-- end search -->
+                <!-- start contact -->
+                <div class="col-sm-2 contact-info mt-4">
+                    <div class="row">
+                        <div class="col-sm-12 basic-info">
+                            <a href="#"><i class="fas fa-envelope"></i>Tbakery@gmail.com</a>
+                            <span><i class="fas fa-phone-alt"></i> 0913620629</span>
+                        </div>
+                    </div>
+                    <!-- end contact -->
+                </div>
+                <!-- end contact info -->
+            </div>
+            <!-- end container -->
+        </div>
+        <!-- end top info -->
+        <div class="navigation">
+            <div class="container">
+                <div class="row menu-bottom">
+                    <nav class="navbar navbar-expand-lg navbar-light p-0">
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                            <ul class="navbar-nav font-weight-bold">
+                                <li class="nav-item active mx-4">
+                                    <a class="nav-link" href="/Home"><i class="fas fa-home"></i><span class="sr-only">(current)</span></a>
+                                </li>
+
+
+                               
+                                <li class="nav-item dropdown mx-4">
+
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                        <a class="dropdown-item" href="#">Sức khỏe</a>
+                                        <a class="dropdown-item" href="#">Chăm sóc</a>
+                                    </div>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </nav>
+                    <!-- end nav -->
+                    <div class="shopping-cart-and-user">
+
+                        @Html.Action("CartCounter", "Cart")
+
+                        @{var userSession = Session["UserLogin"] as PetShop.Models.Customer;}
+
+                        @if (userSession != null)
+                        {
+                            <div class="dropdown user ml-3 my-2 d-inline">
+                                <button class="dropdown-toggle border-0 bg-transparent" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-user"></i>
+                                </button>
+                                <div class="dropdown-menu text-center" aria-labelledby="dropdownMenu2">
+                                    @Html.Action("ProfileName", "Customer")
+                                    <a href="#" class="d-block btn-show-info" onclick="ShowInfo(this)" itemid="@userSession.Id" data-toggle="modal" data-target="#myModal_p">Thông tin</a>
+                                    <a href="#" class="d-block btn-show-info" data-toggle="modal" data-target="#myModal_ChangePwd">Đỗi mật khẩu</a>
+                                    <a href="@Url.Action("LogOut", "Customer")">Đăng xuất</a>
+                                </div>
+                            </div> }
+                        else
+                        {
+                            <a href="@Url.Action("Login", "Customer")" class="user ml-3 my-2 text-dark" data-toggle="modal" data-target="#modal-login">
+                                <i class="fas fa-user"></i>
+                                @Html.Action("ProfileName", "Customer")
+                            </a>}
+
+                        <!-- modal info change pwd -->
+                        <div class="modal fade" id="myModal_ChangePwd" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-info">
+                                        <h5 class="modal-title text-uppercase" id="modalTitle">Đỗi mật khẩu</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+
+                                        <div class="form-group row mx-2">
+                                            <label class="col-sm-4">Mật khẩu cũ</label>
+                                            <input type="password" class="form-control col-sm-8" id="old_pwd">
+                                        </div>
+
+                                        <div class="form-group row mx-2">
+                                            <label class="col-sm-4">Mật khẩu mới</label>
+                                            <input type="password" class="form-control col-sm-8" id="new_pwd">
+                                        </div>
+
+                                        <div class="form-group row mx-2">
+                                            <label class="col-sm-4">Nhập lại mật khẩu mới</label>
+                                            <input type="password" class="form-control col-sm-8" id="new_pwd_confirm">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        @{var userPwd = Session["UserLogin"] as PetShop.Models.Customer;}
+                                        @if (userPwd != null)
+                                        {
+                                            <a href="#" class="btn btn-primary btn-save-info" onclick="SavePwd(this)" itemid="@userPwd.Id">Lưu</a>}
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- modal info customer -->
+                        <div class="modal fade" id="myModal_p" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-info">
+                                        <h5 class="modal-title text-uppercase" id="modalTitle">Thông tin khách hàng</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group row mx-2">
+                                            <label class="col-sm-3">Họ và tên</label>
+                                            <input type="text" class="form-control col-sm-9" id="full-name_p" aria-describedby="emailHelp" name="Username">
+                                        </div>
+                                        <div class="row my-2 mx-2">
+                                            <label class="col-sm-3">Giới tính </label>
+                                            <form class="col-sm-9" id="myForm_p">
+                                                <div class="form-check-inline">
+                                                    <label class="form-check-label">
+                                                        <input type="radio" class="form-check-input" id="male_p" name="gender" value="true">Nam
+                                                    </label>
+                                                </div>
+                                                <div class="form-check-inline">
+                                                    <label class="form-check-label">
+                                                        <input type="radio" class="form-check-input" id="female_p" name="gender" value="false">Nữ
+                                                    </label>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <div class="form-group row mx-2">
+                                            <label class="col-sm-3">Tài khoản</label>
+                                            <input type="text" class="form-control col-sm-9" id="username_p" readonly>
+                                        </div>
+
+                                        <div class="form-group row mx-2">
+                                            <label class="col-sm-3">Địa chỉ</label>
+                                            <textarea type="text" class="form-control col-sm-9" id="address_p"></textarea>
+                                        </div>
+                                        <div class="form-group row mx-2">
+                                            <label class="col-sm-3">Phone</label>
+                                            <input type="text" class="form-control col-sm-9" id="phone_p">
+                                        </div>
+                                        <div class="form-group row mx-2">
+                                            <label class="col-sm-3">Email</label>
+                                            <input type="text" class="form-control col-sm-9" id="email_p">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        @{var user = Session["UserLogin"] as PetShop.Models.Customer;}
+                                        @if (user != null)
+                                        {
+                                            <a href="#" class="btn btn-primary btn-save-info" onclick="UpdateInfo(this)" itemid="@user.Id">Lưu</a>}
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- modal info login and register -->
+                        <div class="modal fade" id="modal-login" role="dialog" data-backdrop="static" data-keyboard="false">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+
+                                    @RenderPage("~/Views/Customer/LoginAndRegister.cshtml")
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end menu bottom -->
+            </div>
+            <!-- end container -->
+        </div>
+        <!-- end navigation -->
+    </div>
+    <!-- end header -->
+
+
+    <div class="content-body py-3">
+
+        <div class="container">
+            @RenderBody()
+        </div>
+
+        <!-- cart noti -->
+        <div class="cart-noti font-weight-bold  d-none">
+            <i class="fas fa-check-circle text-info"></i>
+            <span>Đã thêm vào giỏ hàng.</span>
+        </div>
+
+    </div>
+    <!-- content body -->
+    <!-- footer -->
+    <div class="container-fluid bg-secondary text-white footer">
+        <div class="row p-5">
+            <div class="col-sm-4">
+                <h4 class="text-uppercase border-bottom">T.BAKERY.VN</h4>
+                <div><b>Địa chỉ:</b> 0 Nguyễn Gia Trí, Phường 25, Quận Bình Thạnh, TP. Hồ Chí Minh.</div>
+                <div><b>Phone:</b> 0913620629</div>
+                <div><b>Email:</b> Tbakery@gmail.com</div>
+            </div>
+            <div class="col-sm-4">
+                <h4 class="text-uppercase border-bottom">Giới thiệu</h4>
+                <a href="#" class="text-white d-block">Về chúng tôi</a>
+                <a href="#" class="text-white">Bài viết</a>
+            </div>
+            <div class="col-sm-4">
+                <h4 class="text-uppercase border-bottom">Chính sách</h4>
+                <a href="#" class="text-white d-block">Đổi trả</a>
+                <a href="#" class="text-white">Thanh toán</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- end footer -->
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    @*<script src="~/Assets/Client/petshop/bootstrap/js/jquery-3.3.1.slim.min.js"></script>*@
+    <script src="~/Assets/Client/petshop/bootstrap/js/popper.min.js"></script>
+    <script src="~/Assets/Client/petshop/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/Assets/Client/petshop/js/script.js"></script>
+
+    @RenderSection("masterjs", required: false)
+
+    <script>
+        function ShowInfo(item) {
+            var userId = $(item).attr('itemid');
+
+            var obj = {
+                id: userId
+            };
+
+            console.log(obj);
+
+            $.ajax({
+                url: '/Customer/ShowInfo',
+                method: 'POST',
+                data: obj,
+                success: function (data) {
+                    if (data != "CannotFindCustomer") {
+                        $('#full-name_p').val(data.FullName);
+                        if (data.Gender == true) {
+                            $('#male_p').prop('checked', true);
+                        }
+                        else {
+                            $('#female_p').prop('checked', true);
+                        }
+                        $('#username_p').val(data.Username);
+                        $('#address_p').val(data.Address);
+                        $('#phone_p').val(data.Phone);
+                        $('#email_p').val(data.Email);
+                    }
+                },
+                error: function () {
+                    alert('Có lỗi xảy ra.');
+                }
+            });
+        };
+
+        function UpdateInfo(item) {
+            var userId = $(item).attr('itemid');
+            var fullName = $('#full-name_p').val();
+            var gender = $("input[name='gender']:checked", "#myForm_p").val();
+            var username = $('#username_p').val();
+            var address = $('#address_p').val();
+            var phone = $('#phone_p').val();
+            var email = $('#email_p').val();
+
+            console.log(gender);
+
+            var obj = {
+                id: userId,
+                fullName: fullName,
+                gender: gender,
+                username: username,
+                address: address,
+                phone: phone,
+                email: email
+            };
+
+            $.ajax({
+                url: '/Customer/UpdateInfo',
+                method: 'POST',
+                data: obj,
+                success: function (data) {
+                    if (data == "Success") {
+                        alert('Cập nhật thành công!');
+                        $('#myModal_p').modal('toggle');
+                        window.location.reload();
+                    }
+                },
+                error: function () {
+                    alert('Có lỗi xảy ra.');
+                }
+            });
+        };
+
+
+        function SavePwd(item) {
+            var userId = $(item).attr('itemid');
+            var oldPwd = $('#old_pwd').val();
+            var newPwd = $('#new_pwd').val();
+            var newPwdConfirm = $('#new_pwd_confirm').val();
+
+            if (oldPwd == "" || oldPwd == undefined) {
+                alert('Bạn chưa nhập mật khẩu cũ.');
+            }
+            else {
+                if (newPwd == "" || newPwd == undefined) {
+                    alert('Bạn chưa nhập mật khẩu mới.');
+                }
+                else {
+                    if (newPwdConfirm == "" || newPwdConfirm == undefined) {
+                        alert('Bạn chưa nhập xác nhận mật khẩu.');
+                    }
+                    else {
+                        if (newPwd != newPwdConfirm) {
+                            alert('Mật khẩu không trùng khớp.');
+                        }
+                        else {
+                            var obj = {
+                                id: userId,
+                                newPwd: newPwd
+                            };
+
+                            $.ajax({
+                                url: '/Customer/ChangePwd',
+                                method: 'POST',
+                                data: obj,
+                                success: function (data) {
+                                    if (data == "Success") {
+                                        alert('Thay đỗi mật khẩu thành công.');
+                                        window.location.reload();
+                                    }
+                                    else {
+                                        alert(data);
+                                    }
+                                },
+                                error: function () {
+                                    alert('Có lỗi xảy ra.')
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        function Login() {
+            var username = $('#username').val();
+            var password = $('#password').val();
+
+
+            var obj = {
+                username: username,
+                password: password
+            };
+
+            $.ajax({
+                url: '/Customer/Login',
+                method: 'POST',
+                data: obj,
+                success: function (data) {
+                    if (data == "UsernameIsEmpty") {
+                        $('#noti').text("Tài khoản không được để trống.");
+                        $('#noti').removeClass('fade');
+                        $('#noti').addClass('show');
+                    }
+                    else {
+                        if (data == "PasswordIsEmpty") {
+                            $('#noti').text("Mật khẩu không được để trống.");
+                            $('#noti').removeClass('fade');
+                            $('#noti').addClass('show');
+                        }
+                        else {
+                            if (data == "IncorrectUser") {
+                                $('#noti').text("Tài khoản hoặc mật khẩu không chính xác.");
+                                $('#noti').removeClass('fade');
+                                $('#noti').addClass('show');
+                            }
+                            else {
+                                $('#modal-login').modal('hide');
+                                $('#user-login').text('(' + data + ')');
+                                window.location.reload();
+                            }
+
+                        }
+                    }
+                },
+                error: function () {
+                    alert('Có lỗi xảy ra.');
+                }
+            });
+        };
+
+        function Register() {
+
+            var fullName = $('#full-name').val();
+            var gender = $('input[name="gender"]:checked').val();
+            var username = $('#username-register').val();
+            var password = $('#password-register').val();
+            var address = $('#address').val();
+            var phone = $('#phone').val();
+            var email = $('#email').val();
+
+            if (fullName == "" || fullName == undefined) {
+                alert('Bạn chưa nhập họ và tên.');
+            }
+            else {
+                if (gender == "" || gender == undefined) {
+                    alert('Bạn chưa chọn giới tính.');
+                }
+                else {
+                    if (username == "" || username == undefined) {
+                        alert('Bạn chưa nhập tên tài khoản.');
+                    }
+                    else {
+                        if (password == "" || password == undefined) {
+                            alert('Bạn chưa nhập mật khẩu.');
+                        }
+                        else {
+                            if (address == "" || address == undefined) {
+                                alert('Bạn chưa nhập địa chỉ.');
+                            }
+                            else {
+                                if (phone == "" || phone == undefined) {
+                                    alert('Bạn chưa nhập số điện thoại.');
+                                }
+                                else {
+                                    if (email == "" || email == undefined) {
+                                        alert('Bạn chưa nhập email.');
+                                    }
+                                    else {
+                                        var obj = {
+                                            FullName: fullName,
+                                            Gender: gender,
+                                            Username: username,
+                                            Password: password,
+                                            Address: address,
+                                            Phone: phone,
+                                            Email: email
+                                        };
+                                        $.ajax({
+                                            url: '/Customer/Register',
+                                            method: 'POST',
+                                            data: obj,
+                                            success: function (data) {
+                                                if (data == 'Success') {
+                                                    $('#noti-register').text('Đăng ký thành công!');
+                                                    $('#noti-register').removeClass('fade');
+                                                    $('#noti-register').addClass('show');
+                                                }
+                                            },
+                                            error: function () {
+                                                alert('Đăng ký không thành công :(')
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        $(document).ready(function () {
+            $('#btn-login').click(function (event) {
+                event.preventDefault();
+            });
+            $('#btn-show-info').click(function (event) {
+                event.preventDefault();
+            });
+            $('#btn-save-info').click(function (event) {
+                event.preventDefault();
+            });
+        });
+    </script>
+
+</body>
+</html>

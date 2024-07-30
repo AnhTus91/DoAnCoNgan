@@ -1,0 +1,102 @@
+﻿
+<div class="modal-header bg-info">
+    <div class="modal-title">
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active text-dark" data-toggle="tab" href="#login">Đăng nhập</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" data-toggle="tab" href="#register">Đăng ký</a>
+            </li>
+        </ul>
+    </div>
+    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true" id="close-modal">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body bg-white px-5">
+    <div class="tab-content">
+        <div id="login" class="container tab-pane active">
+            @using (Html.BeginForm())
+            {
+                <div class="alert alert-danger fade" id="noti"></div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Tài khoản</label>
+                    <input type="text" class="form-control" id="username" aria-describedby="emailHelp" name="Username">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Mật khẩu</label>
+                    <input type="password" class="form-control" id="password" name="Password">
+                </div>
+                <div class="row px-2">
+                    <button class="btn btn-success col-sm-12" id="btn-login" onclick="Login()">Đăng nhập</button>
+                </div>
+            }
+            <div class="row px-2 mt-2">
+                <a href="#" class="btn btn-primary col-sm-12"><i class="fab fa-facebook-square"></i> Đăng nhập bằng Facebook</a>
+            </div>
+            <div class="row px-2 text-center mt-2">
+                <div class="col-sm-12">
+                    <label>Quên mật khẩu?</label>
+                    <a href="#">BẤM VÀO ĐÂY.</a>
+                </div>
+            </div>
+        </div>
+        <div id="register" class="container tab-pane fade">
+            @using (Html.BeginForm("Register", "Customer", FormMethod.Post))
+            {
+                <div class="alert alert-success fade" id="noti-register"></div>
+                <div class="form-group row">
+                    <label class="col-sm-3">Họ và tên</label>
+                    <input type="text" class="form-control col-sm-9" id="full-name" aria-describedby="emailHelp" name="Username">
+                </div>
+                <div class="row my-2">
+                    <label class="col-sm-3">Giới tính </label>
+                    <div class="col-sm-9">
+                        <div class="form-check-inline">
+                            <label class="form-check-label">
+                                <input type="radio" class="form-check-input" id="male" name="gender" value="true">Nam
+                            </label>
+                        </div>
+                        <div class="form-check-inline">
+                            <label class="form-check-label">
+                                <input type="radio" class="form-check-input" id="female" name="gender" value="false">Nữ
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-3">Tài khoản</label>
+                    <input type="text" class="form-control col-sm-9" id="username-register" name="Username">
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3">Mật khẩu</label>
+                    <input type="password" class="form-control col-sm-9" id="password-register" name="Password">
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3">Địa chỉ</label>
+                    <input type="text" class="form-control col-sm-9" id="address" name="Password">
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3">Phone</label>
+                    <input type="text" class="form-control col-sm-9" id="phone" name="Password">
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3">Email</label>
+                    <input type="text" class="form-control col-sm-9" id="email" name="Password">
+                </div>
+                <div class="row pl-2">
+                    <a href="#" class="btn btn-success col-sm-12" onclick="Register()">Tạo tài khoản</a>
+                </div>
+
+            }
+        </div>
+
+    </div>
+</div>
+
+<div class="modal-footer border-0">
+
+</div>

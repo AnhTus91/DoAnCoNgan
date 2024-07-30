@@ -1,0 +1,213 @@
+﻿@using PetShop.Models
+@model List<Customer>
+@{
+    ViewBag.Title = "List All Customers";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<br>
+<h3>Khách hàng</h3>
+<div class="row my-2">
+    <div class="col-sm-6">
+        <div class="sort d-inline-block">
+            <select name="sort" id="sort" class="form-control d-inline">
+                <option selected>Sắp xếp...</option>
+                <option value="username">Sắp xếp theo tên tài khoản</option>
+                <option value="created-date">Sắp xếp theo ngày tạo</option>
+            </select>
+        </div>
+
+    </div>
+    <div class="col-sm-6">
+        @using (Html.BeginForm("Search", "Customer", FormMethod.Post, new { @class = "form-inline my-2 my-lg-0 float-right" }))
+        {
+            <input class="form-control mr-sm-2 search-input" type="search" placeholder="Tìm kiếm..." aria-label="Search" name="searchStr">
+            <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit"><i class="fas fa-search"></i></button>
+        }
+    </div>
+</div>
+<table class="table table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">Họ và tên</th>
+            <th scope="col">Tài khoản</th>
+            <th scope="col">Địa chỉ</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Email</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr id="row_@item.Id">
+                <th scope="row">@item.Id</th>
+                <td>@item.FullName</td>
+                <td>@item.Username</td>
+                <td>@item.Address</td>
+                <td>@item.Phone</td>
+                <td>@item.Email</td>
+                <td>
+                    @*<a href="#" class="mx-1 btn-update" onclick="CustomerInfo(this)" itemid="@item.Id">
+                            <i class="fas fa-user-edit"></i>
+                        </a>*@
+                    <div class="modal fade" id="myModal_@item.Id" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header bg-info">
+                                    <h5 class="modal-title text-uppercase" id="modalTitle">Thông tin khách hàng</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group row mx-2">
+                                        <label class="col-sm-3">Họ và tên</label>
+                                        <input type="text" class="form-control col-sm-9" id="full-name_@item.Id" aria-describedby="emailHelp" name="Username">
+                                    </div>
+                                    <div class="row my-2 mx-2">
+                                        <label class="col-sm-3">Giới tính </label>
+                                        <form class="col-sm-9" id="myForm_@item.Id">
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input type="radio" class="form-check-input" id="male_@item.Id" name="gender" value="true">Nam
+                                                </label>
+                                            </div>
+                                            <div class="form-check-inline">
+                                                <label class="form-check-label">
+                                                    <input type="radio" class="form-check-input" id="female_@item.Id" name="gender" value="false">Nữ
+                                                </label>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    <div class="form-group row mx-2">
+                                        <label class="col-sm-3">Tài khoản</label>
+                                        <input type="text" class="form-control col-sm-9" id="username_@item.Id">
+                                    </div>
+
+                                    <div class="form-group row mx-2">
+                                        <label class="col-sm-3">Địa chỉ</label>
+                                        <textarea type="text" class="form-control col-sm-9" id="address_@item.Id"></textarea>
+                                    </div>
+                                    <div class="form-group row mx-2">
+                                        <label class="col-sm-3">Phone</label>
+                                        <input type="text" class="form-control col-sm-9" id="phone_@item.Id">
+                                    </div>
+                                    <div class="form-group row mx-2">
+                                        <label class="col-sm-3">Email</label>
+                                        <input type="text" class="form-control col-sm-9" id="email_@item.Id">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#" class="btn btn-primary btn-save-customer" onclick="UpdateCustomer(this)" itemid="@item.Id">Lưu</a>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @Ajax.ActionLink(" ", "Delete", "Customer", new { id = item.Id }, new AjaxOptions
+               {
+                   Confirm = "Bạn có chắc chắn muốn khách hàng này?",
+                   OnComplete = "$('#row_" + item.Id + "').remove()",
+                   HttpMethod = "Delete"
+               }, new { @class = "fas fa-trash mx-1" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+
+@section masterjs{
+    <script>
+        function CustomerInfo(item) {
+            var customerId = $(item).attr('itemid');
+
+            var obj = {
+                id: customerId
+            };
+
+            $.ajax({
+                url: '/Admin/Customer/Details',
+                method: 'POST',
+                data: obj,
+                success: function (data) {
+                    if (data != "CannotFindCustomer") {
+                        $('#full-name_' + customerId).val(data.FullName);
+                        if (data.Gender == true) {
+                            $('#male_' + customerId).prop('checked', true);
+                        }
+                        else {
+                            $('#female_' + customerId).prop('checked', true);
+                        }
+                        $('#username_' + customerId).val(data.Username);
+                        $('#address_' + customerId).val(data.Address);
+                        $('#phone_' + customerId).val(data.Phone);
+                        $('#email_' + customerId).val(data.Email);
+                        $('#myModal_' + customerId).modal();
+                    }
+                },
+                error: function () {
+                    alert('Có lỗi xảy ra.');
+                }
+            });
+        };
+
+        function UpdateCustomer(item) {
+
+            var customerId = $(item).attr('itemid');
+            var fullName = $('#full-name_' + customerId).val();
+            var gender = $("input[name='gender']:checked", "#myForm_" + customerId).val();
+            var username = $('#username_' + customerId).val();
+            var address = $('#address_' + customerId).val();
+            var phone = $('#phone_' + customerId).val();
+            var email = $('#email_' + customerId).val();
+
+            console.log(gender);
+
+            var obj = {
+                id: customerId,
+                fullName: fullName,
+                gender: gender,
+                username: username,
+                address: address,
+                phone: phone,
+                email: email
+            };
+
+            console.log(obj);
+
+            $.ajax({
+                url: '/Admin/Customer/Update',
+                method: 'POST',
+                data: obj,
+                success: function (data) {
+                    if (data == "Success") {
+                        alert('Cập nhật thành công!');
+                        $('#myModal_' + customerId).modal('toggle');
+                        window.location.reload();
+                    }
+                    else {
+                        alert('Không tìm thấy khách hàng.');
+                    }
+                },
+                error: function () {
+                    alert('Có lỗi xảy ra.');
+                }
+            });
+        };
+
+        $(document).ready(function () {
+            $('.btn-update').click(function (event) {
+                event.preventDefault();
+            });
+
+            $('.btn-save-customer').click(function (event) {
+                event.preventDefault();
+            });
+        });
+    </script>
+}

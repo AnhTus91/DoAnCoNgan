@@ -1,0 +1,28 @@
+﻿@{
+    ViewBag.Title = "CheckOutConfirm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    long? orderId = ViewBag.OrderId; // Lấy orderId từ ViewBag
+}
+
+<div class="bg-white rounded p-4 text-center">
+    <div class="row">
+        <div class="col-sm-12">
+            <h2>Đặt hàng thành công! Cảm ơn quý khách đã sử dụng dịch vụ.</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <p>
+                Kiểm tra đơn hàng của bạn tại <a href="#">ĐÂY.</a>
+            </p>
+            <p>
+                @if (orderId.HasValue)
+                {
+                    <a href="@Url.Action("ExportInvoice", "Cart", new { id = orderId.Value })" class="btn btn-primary">
+                        Xuất hóa đơn
+                    </a>
+                }
+            </p>
+        </div>
+    </div>
+</div>
